@@ -15,7 +15,7 @@ Book::Book(string tit, string isbn, string auth, string pub, string pub_time, st
     head = new Tag;
 }
 
-void Book::insert_tag(string s) {
+void Book::insertTag(string s) {
     Tag* temp = head;
     while (temp->next != nullptr) {
         temp = temp->next;
@@ -28,7 +28,7 @@ void Book::insert_tag(string s) {
     head->num++;
 }
 
-void Book::delete_tag(string s) {
+void Book::deleteTag(string s) {
     Tag* temp = head->next;
     Tag* pre = head;
     while (temp != nullptr && temp->name != s) {
@@ -45,7 +45,7 @@ void Book::delete_tag(string s) {
     }
 }
 
-void Book::add_time(int x) {
+void Book::addTime(int x) {
     time += x;
 }
 

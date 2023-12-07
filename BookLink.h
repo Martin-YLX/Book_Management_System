@@ -28,9 +28,9 @@ private:
 public:
     Book(); // 初始化
     Book(string tit, string isbn, string auth, string pub, string pub_time, string pri, ull tim); // 插入内容
-    void insert_tag(string s); // 增加 tag
-    void delete_tag(string s); // 删除 tag
-    void add_time(int x); // 修改借阅次数
+    void insertTag(string s); // 增加 tag
+    void deleteTag(string s); // 删除 tag
+    void addTime(int x); // 修改借阅次数
 
     // 添加 getter 函数，用于获取私有成员
     string getTitle() const;
