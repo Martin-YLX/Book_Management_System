@@ -6,7 +6,7 @@ using namespace std;
 // todo: Detail & Tag
 
 Detail::Detail() {
-    name = "";
+    title = "";
     isbn_issn = "";
     author = "";
     publish = "";
@@ -16,8 +16,8 @@ Detail::Detail() {
 }
 
 #define ull unsigned long long
-Detail::Detail(string nam,string isbn,string auth,string pub,string pub_time,string pri,ull tim) {
-    name = nam;
+Detail::Detail(string tit,string isbn,string auth,string pub,string pub_time,string pri,ull tim) {
+    title = tit;
     isbn_issn = isbn;
     author = auth;
     publish = pub;
@@ -32,7 +32,7 @@ void Detail::insert_tag(Tag *p,string s) {
     while (temp->next == nullptr) {
         temp = temp->next;
     }
-    Tag *next = (Tag *)malloc(sizeof(Tag));
+    Tag *next = new Tag;
     next->name = s;
     next->next = nullptr;
     temp->next = next;
@@ -48,7 +48,7 @@ void Detail::delete_tag(Tag *p,string s) {
         temp = temp->next;
     }
     pre->next = temp->next;
-    free(temp);
+    delete temp;
     p->num --;
 }
 
@@ -65,7 +65,7 @@ Book::Book() {
 void Book::print() {
     printf("书籍信息：\n");
     printf("名称：\n");
-    cout << detail.name << endl;
+    cout << detail.title << endl;
     printf("ISBN/ISSN：\n");
     cout << detail.isbn_issn << endl;
     printf("作者：\n");
@@ -80,7 +80,7 @@ void Book::print() {
 }
 
 void Book::insert(Detail in) {
-    detail.name = in.name;
+    detail.title = in.title;
     detail.isbn_issn = in.isbn_issn;
     detail.author = in.author;
     detail.publish = in.publish;
@@ -98,7 +98,7 @@ void insert_book(Book *p,Detail in) {
     while (temp->next != nullptr) {
         temp = temp->next;
     }
-    Book *next = (Book *)malloc(sizeof(Book));
+    Book *next = new Book;
     next->insert(in);
     next->next = nullptr;
     temp->next = next;
@@ -114,16 +114,16 @@ void delete_book(Book *p,string isbn) {
         temp = temp->next;
     }
     pre->next = temp->next;
-    free(temp);
+    delete temp;
     p->num --;
 }
 
 void search_name(Book *p,Book *now) {
-    string name;
+    string title;
     printf("输入你要查询的书籍名称：");
-    cin >> name;
+    cin >> title;
     Book *temp = p;
-    while (temp->detail.name != name) {
+    while (temp->detail.title != title) {
         temp = temp->next;
     }
     insert_book(now,temp->detail);
@@ -220,10 +220,10 @@ void change_name(Book *now) {
         string name;
         printf("请输入修改后的名称：");
         cin >> name;
-        temp->detail.name = name;
+        temp->detail.title = name;
         pre = temp;
         temp = temp->next;
-        free(pre);
+        delete pre;
     }
 }
 
@@ -238,7 +238,7 @@ void change_isbn(Book *now) {
         temp->detail.isbn_issn = isbn;
         pre = temp;
         temp = temp->next;
-        free(pre);
+        delete pre;
     }
 }
 
@@ -253,7 +253,7 @@ void change_author(Book *now) {
         temp->detail.author = author;
         pre = temp;
         temp = temp->next;
-        free(pre);
+        delete pre;
     }
 }
 
@@ -268,7 +268,7 @@ void change_publish(Book *now) {
         temp->detail.publish = publish;
         pre = temp;
         temp = temp->next;
-        free(pre);
+        delete pre;
     }
 }
 
@@ -283,7 +283,7 @@ void change_publish_time(Book *now) {
         temp->detail.publish = publish_time;
         pre = temp;
         temp = temp->next;
-        free(pre);
+        delete pre;
     }
 }
 
@@ -298,7 +298,7 @@ void change_price(Book *now) {
         temp->detail.price = price;
         pre = temp;
         temp = temp->next;
-        free(pre);
+        delete pre;
     }
 }
 
@@ -384,7 +384,7 @@ void search_book(Book *p) {
         temp->print();
         pre = temp;
         temp = temp->next;
-        free(pre);
+        delete pre;
     }
 }
 
