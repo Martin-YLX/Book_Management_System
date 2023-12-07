@@ -4,8 +4,9 @@ project(Book_Management_System)
 set(CMAKE_CXX_STANDARD 17)
 
 add_executable(Book_Management_System main.cpp
-        Book.h
-        Book.cpp
+        BookLink.h
         Person.h
         User.h
-        User.cpp)
+        User.cpp
+        BookLink.cpp
+        Book.cpp)
