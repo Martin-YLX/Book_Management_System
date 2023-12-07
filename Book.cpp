@@ -1,6 +1,7 @@
 #include "Book.h"
 #include <cstdio>
 #include <iostream>
+#include <algorithm>
 using namespace std;
 
 // todo: Detail & Tag
@@ -29,7 +30,7 @@ Detail::Detail(string tit,string isbn,string auth,string pub,string pub_time,str
 
 void Detail::insert_tag(Tag *p,string s) {
     Tag *temp = p;
-    while (temp->next == nullptr) {
+    while (temp->next != nullptr) {
         temp = temp->next;
     }
     Tag *next = new Tag;
@@ -40,16 +41,21 @@ void Detail::insert_tag(Tag *p,string s) {
     p->num ++;
 }
 
-void Detail::delete_tag(Tag *p,string s) {
+void Detail::delete_tag(Tag *p, string s) {
     Tag *temp = p->next;
     Tag *pre = p;
-    while (temp->name != s) {
+    while (temp != nullptr && temp->name != s) {
         pre = temp;
         temp = temp->next;
     }
-    pre->next = temp->next;
-    delete temp;
-    p->num --;
+    if (temp != nullptr) {
+        pre->next = temp->next;
+        if (temp->next != nullptr) {
+            temp->next->pre = pre;
+        }
+        delete temp;
+        p->num--;
+    }
 }
 
 void Detail::add_time(int x) {
@@ -280,7 +286,7 @@ void change_publish_time(Book *now) {
         string publish_time;
         printf("请输入修改后的出版时间：");
         cin >> publish_time;
-        temp->detail.publish = publish_time;
+        temp->detail.publish_time = publish_time;
         pre = temp;
         temp = temp->next;
         delete pre;
@@ -310,7 +316,7 @@ void change_book(Book *p) {
     printf("5.修改出版时间\n");
     printf("6.修改价格\n");
     printf("请选择你的操作：\n");
-    Book *now; //修改书籍头指针
+    Book *now = new Book; //修改书籍头指针
     int opt;
     scanf("%d",&opt);
     switch (opt) {
@@ -352,7 +358,7 @@ void search_book(Book *p) {
     printf("5.出版时间\n");
     printf("6.价格区间\n");
     printf("请选择你的操作：\n");
-    Book *now; //修改书籍头指针
+    Book *now = new Book; //修改书籍头指针
     int opt;
     scanf("%d",&opt);
     switch (opt) {
@@ -387,5 +393,164 @@ void search_book(Book *p) {
         delete pre;
     }
 }
+
+#define ull unsigned long long
+void sort_time(Book *p) {
+    Book *temp = p;
+    Book *sort_head = new Book;
+    sort_head->next = nullptr;
+    ull max_time = -1, min_time = ~0ull>>1;
+    int cnt = 0;
+    while (temp->next != nullptr) {
+        if (cnt < 10) {
+            Book *sort_temp = sort_head;
+            bool flag = false;
+            while (sort_temp->next != nullptr) {
+                if (sort_temp->next->detail.time < temp->detail.time) {
+                    max_time = max(max_time,temp->detail.time);
+                    min_time = min(min_time,temp->detail.time);
+                    Book *sort_new = new Book;
+                    sort_new->detail = temp->detail;
+                    sort_new->next = sort_temp->next;
+                    sort_temp->next->pre = sort_new;
+                    sort_new->pre = sort_temp;
+                    sort_temp->next = sort_new;
+                    flag = true;
+                    break;
+                }
+                sort_temp = sort_temp->next;
+            }
+            if (!flag) {
+                max_time = max(max_time,temp->detail.time);
+                min_time = min(min_time,temp->detail.time);
+                Book *sort_new = new Book;
+                sort_new->detail = temp->detail;  //深拷贝!!
+                sort_temp->next = sort_new;
+            }
+            cnt++;
+        } else {
+            if (temp->detail.time <= min_time) continue;
+            Book *sort_temp = sort_head;
+            while (sort_temp->next->detail.time >= temp->detail.time) {
+                sort_temp = sort_temp->next;
+            }
+            Book *pre = nullptr;
+            Book *sort_new = new Book;
+            sort_new->detail = temp->detail;
+            sort_new->next = sort_temp->next;
+            sort_temp->next->pre = sort_new;
+            sort_new->pre = sort_temp;
+            sort_temp->next = sort_new;
+            while (sort_temp->next != nullptr) {
+                pre = sort_temp;
+                sort_temp = sort_temp->next;
+            }
+            delete sort_temp;
+            min_time = pre->detail.time;
+        }
+        temp = temp->next;
+    }
+}
+#undef ull
+
+bool cmp_publish_time(string a,string b) {  // a < b
+    for (int i = 0;i < min(a.length(),b.length());i++) {
+        if (a[i] < b[i]) return true;
+        if (a[i] > b[i]) return false;
+    }
+    return false; //不相等就false
+}
+
+void sort_publish_time(Book *p) {
+    Book *temp = p;
+    Book *sort_head = new Book;
+    sort_head->next = nullptr;
+    string max_time = "0", min_time = "99999999999";
+    int cnt = 0;
+    while (temp->next != nullptr) {
+        if (cnt < 10) {
+            Book *sort_temp = sort_head;
+            bool flag = false;
+            while (sort_temp->next != nullptr) {
+                if (cmp_publish_time(sort_temp->next->detail.publish_time,temp->detail.publish_time)) {
+                    if (cmp_publish_time(max_time,temp->detail.publish_time)) {
+                        max_time = temp->detail.publish_time;
+                    }//max_time = max(max_time,temp->detail.time);
+                    if (cmp_publish_time(temp->detail.publish_time,min_time)) {
+                        min_time = temp->detail.publish_time;
+                    }
+                    Book *sort_new = new Book;
+                    sort_new->detail = temp->detail;
+                    sort_new->next = sort_temp->next;
+                    sort_temp->next->pre = sort_new;
+                    sort_new->pre = sort_temp;
+                    sort_temp->next = sort_new;
+                    flag = true;
+                    break;
+                }
+                sort_temp = sort_temp->next;
+            }
+            if (!flag) {
+                if (cmp_publish_time(temp->detail.publish_time,min_time)) {
+                    min_time = temp->detail.publish_time;
+                }//min_time = min(min_time,temp->detail.time);
+                if (cmp_publish_time(max_time,temp->detail.publish_time)) {
+                    max_time = temp->detail.publish_time;
+                }
+                Book *sort_new = new Book;
+                sort_new->detail = temp->detail;  //深拷贝!!
+                sort_temp->next = sort_new;
+            }
+            cnt++;
+        } else {
+            if (!cmp_publish_time(min_time,temp->detail.publish_time)) continue;
+            //if (temp->detail.time <= min_time) continue;
+            Book *sort_temp = sort_head;
+            while (!cmp_publish_time(sort_temp->next->detail.publish_time,temp->detail.publish_time)) {
+                //sort_temp->next->detail.time >= temp->detail.time
+                sort_temp = sort_temp->next;
+            }
+            Book *pre;
+            Book *sort_new = new Book;
+            sort_new->detail = temp->detail;
+            sort_new->next = sort_temp->next;
+            sort_temp->next->pre = sort_new;
+            sort_new->pre = sort_temp;
+            sort_temp->next = sort_new;
+            while (sort_temp->next != nullptr) {
+                pre = sort_temp;
+                sort_temp = sort_temp->next;
+            }//删除最后一个（最小的）
+            delete sort_temp;
+            min_time = pre->detail.publish_time;
+        }
+        temp = temp->next;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

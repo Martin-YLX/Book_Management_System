@@ -8,7 +8,7 @@ struct  Tag {
     string name;
     Tag *pre;
     Tag *next;
-}*sum;
+};
 
 #define ull unsigned long long
 struct Detail {
@@ -63,11 +63,14 @@ public:
     friend void change_publish_time(Book *now);
     friend void change_price(Book *now);
     //排序
-
-
+    friend void sort_lexico(Book *p);
+    friend void sort_time(Book *p);
+    friend bool cmp_publish_time(string a,string b);
+    friend void sort_publish_time(Book *p);
 
 };//todo:返回上级目录
 
 
 
-// todo: 字典序排序 借阅次数前10 出版时间前10 tag数目前10
+// todo: 字典序排序 tag数目前10
+
