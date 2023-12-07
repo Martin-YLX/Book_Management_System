@@ -3,14 +3,14 @@
 #include <iostream>
 using namespace std;
 
+class BookLink;
+
 struct Tag {
-    int num;
+    int cnt;
     string name;
     Tag* pre;
     Tag* next;
 };
-
-class BookLink;
 
 #define ull unsigned long long
 
@@ -32,7 +32,6 @@ public:
     void deleteTag(string s); // 删除 tag
     void addTime(int x); // 修改借阅次数
 
-    // 添加 getter 函数，用于获取私有成员
     string getTitle() const;
     string getIsbnIssn() const;
     string getAuthor() const;
@@ -40,6 +39,7 @@ public:
     string getPublishTime() const;
     string getPrice() const;
     ull getTime() const;
+
     Tag* getHead() const;
 
     friend class BookLink;
@@ -51,6 +51,7 @@ private:
     Book detail;
     BookLink* pre;
     BookLink* next;
+    Tag* allTag;
 
 public:
     BookLink(); // 初始化
@@ -83,4 +84,9 @@ public:
     void sortPublishTime(); // 按出版时间排序
     void merge(BookLink*& head1, BookLink*& head2); // 合并两个链表
     void sortLexico(); // 字典序排序
+    //标签
+    Tag* getAllTagHead() const;
+    void insertAllTag(string s); //该tag书籍加一
+    void deleteAllTag(string s); //该tag书籍减一
+    void sortTag(); //最受欢迎的前三个tag
 };

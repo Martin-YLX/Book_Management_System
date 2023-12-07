@@ -1,4 +1,5 @@
 #include "BookLink.h"
+#include <algorithm>
 
 BookLink::BookLink() {
     next = nullptr;
@@ -348,6 +349,7 @@ void BookLink::sortTime() {
 
                     BookLink* sortNew = new BookLink;
                     sortNew->detail = temp->next->detail;  //todo:是否是next ？ 下面那个函数也一样
+
                     sortNew->next = sortTemp->next;
                     sortTemp->next->pre = sortNew;
                     sortNew->pre = sortTemp;
@@ -374,6 +376,7 @@ void BookLink::sortTime() {
             BookLink* pre = nullptr;
             BookLink* sortNew = new BookLink;
             sortNew->detail = temp->next->detail;
+
             sortNew->next = sortTemp->next;
             sortTemp->next->pre = sortNew;
             sortNew->pre = sortTemp;
@@ -420,6 +423,7 @@ void BookLink::sortPublishTime() {
 
                     BookLink* sortNew = new BookLink;
                     sortNew->detail = temp->next->detail; //todo：next？
+
                     sortNew->next = sortTemp->next;
                     sortTemp->next->pre = sortNew;
                     sortNew->pre = sortTemp;
@@ -451,6 +455,7 @@ void BookLink::sortPublishTime() {
             BookLink* pre = nullptr;
             BookLink* sortNew = new BookLink;
             sortNew->detail = temp->next->detail;
+
             sortNew->next = sortTemp->next;
             sortTemp->next->pre = sortNew;
             sortNew->pre = sortTemp;
@@ -502,6 +507,129 @@ void BookLink::sortLexico() {
     head2->sortLexico();
     merge(head1, head2);
 }
+
+Tag* BookLink::getAllTagHead() const {
+    return allTag;
+}
+
+void BookLink::insertAllTag(string s) {
+    bool flag = false;
+    Tag* temp = allTag;
+    while (temp->next != nullptr) {
+        if (temp->name == s) {
+            temp->cnt++;
+            flag = true;
+            break;
+        }
+        temp = temp->next;
+    }
+    if (flag) return;
+    Tag* newNode = new Tag;
+    newNode->name = s;
+    newNode->cnt = 1;
+    temp->next = newNode;
+    newNode->pre = temp;
+}
+
+void BookLink::deleteAllTag(string s) {
+    Tag* temp = allTag;
+    while (temp->next != nullptr) {
+        if (temp->name == s) {
+            temp->cnt--;
+            if (temp->cnt == 0) {
+                Tag* pre = temp->pre;
+                pre->next = temp->next;
+                temp->next->pre = pre;
+            }
+            break;
+        }
+        temp = temp->next;
+    }
+}
+
+void BookLink::sortTag() {
+    Tag* temp = this->allTag;
+    Tag* sortHead = new Tag;
+    sortHead->next = nullptr;
+    ull maxFav = -1, minFav = ~0ull>>1;
+    int cnt = 0;
+    while (temp->next != nullptr) {
+        if (cnt < 3) {
+            Tag* sortTemp = new Tag;
+            bool flag = false;
+            while (sortTemp->next != nullptr) {
+                if (sortTemp->next->cnt < temp->next->cnt) {
+                    maxFav = max(maxFav,(ull)temp->next->cnt);
+                    minFav = min(minFav,(ull)temp->next->cnt);
+
+                    Tag* sortNew = new Tag;
+                    sortNew->name = temp->next->name;
+                    sortNew->cnt = temp->next->cnt;
+
+                    sortNew->next = sortTemp->next;
+                    sortTemp->next->pre = sortNew;
+                    sortNew->pre = sortTemp;
+                    sortTemp->next = sortNew;
+                    flag = true;
+                    break;
+                }
+                sortTemp = sortTemp->next;
+            }
+            if (!flag) {
+                maxFav = max(maxFav,(ull)temp->next->cnt);
+                minFav = min(minFav,(ull)temp->next->cnt);
+                Tag* sortNew = new Tag;
+                sortNew->name = temp->next->name;
+                sortNew->cnt = temp->next->cnt;
+                sortTemp->next = sortNew;
+            }
+            cnt ++;
+        } else {
+            if (temp->next->cnt <= minFav) continue;
+            Tag* sortTemp = sortHead;
+            while (sortTemp->next->cnt >= temp->next->cnt) {
+                sortTemp = sortTemp->next;
+            }
+            Tag* pre = nullptr;
+            Tag* sortNew = new Tag;
+            sortNew->name = temp->next->name;
+            sortNew->cnt = temp->next->cnt;
+
+            sortNew->next = sortTemp->next;
+            sortTemp->next->pre = sortNew;
+            sortNew->pre = sortTemp;
+            sortTemp->next = sortNew;
+            while (sortTemp->next != nullptr) {
+                pre = sortTemp;
+                sortTemp = sortTemp->next;
+            }
+            delete sortTemp;
+            minFav = pre->cnt;
+        }
+        temp = temp->next;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

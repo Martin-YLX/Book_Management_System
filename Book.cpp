@@ -25,7 +25,7 @@ void Book::insertTag(string s) {
     next->next = nullptr;
     temp->next = next;
     next->pre = temp;
-    head->num++;
+    head->cnt++;
 }
 
 void Book::deleteTag(string s) {
@@ -41,7 +41,7 @@ void Book::deleteTag(string s) {
             temp->next->pre = pre;
         }
         delete temp;
-        head->num--;
+        head->cnt--;
     }
 }
 
