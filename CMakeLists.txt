@@ -6,7 +6,8 @@ set(CMAKE_CXX_STANDARD 17)
 add_executable(Book_Management_System main.cpp
         BookLink.h
         Person.h
-        User.h
-        User.cpp
         BookLink.cpp
-        Book.cpp)
+        Book.cpp
+        Person.cpp
+        User.h
+        User.cpp)

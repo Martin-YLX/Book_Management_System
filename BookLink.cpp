@@ -7,33 +7,55 @@ BookLink::BookLink() {
 }
 
 void BookLink::insert(Book in) {
-    detail.title = in.getTitle();
-    detail.isbn_issn = in.getIsbnIssn();
-    detail.author = in.getAuthor();
-    detail.publish = in.getPublish();
-    detail.publish_time = in.getPublishTime();
-    detail.price = in.getPrice();
+    book.title = in.getTitle();
+    book.isbn_issn = in.getIsbnIssn();
+    book.author = in.getAuthor();
+    book.publish = in.getPublish();
+    book.publishTime = in.getPublishTime();
+    book.price = in.getPrice();
+    book.time = in.time;
+    book.flagBorrow = false;
 }
 
 void BookLink::print() {
     printf("书籍信息：\n");
     printf("名称：\n");
-    cout << detail.title << endl;
+    cout << book.title << endl;
     printf("ISBN/ISSN：\n");
-    cout << detail.isbn_issn << endl;
+    cout << book.isbn_issn << endl;
     printf("作者：\n");
-    cout << detail.author << endl;
+    cout << book.author << endl;
     printf("出版社：\n");
-    cout << detail.publish << endl;
+    cout << book.publish << endl;
     printf("出版时间：\n");
-    cout << detail.publish_time << endl;
+    cout << book.publishTime << endl;
     printf("价格：\n");
-    cout << detail.price << endl;
-    printf("借阅次数：%llu\n", detail.getTime());
+    cout << book.price << endl;
+    printf("借阅次数：%llu\n", book.getTime());
+}
+
+void BookLink::allPrint() {
+    BookLink* temp = this;
+    while (this->next != nullptr) {
+        this->next->print();
+        putchar('\n');
+    }
 }
 
 bool BookLink::check(string isbn) {
-    return detail.getIsbnIssn() == isbn;
+    return book.getIsbnIssn() == isbn;
+}
+
+BookLink* BookLink::getPre() {
+    return pre;
+}
+
+BookLink* BookLink::getNext() {
+    return next;
+}
+
+Book BookLink::getBook() {
+    return book;
 }
 
 void BookLink::insertBook(Book in) {
@@ -50,8 +72,8 @@ void BookLink::insertBook(Book in) {
 }
 
 void BookLink::deleteBook(string isbn) {
-    BookLink* temp = this;
-    BookLink* pre;
+    BookLink* temp = this->next;
+    BookLink* pre = this;
     while (!temp->check(isbn)) {
         pre = temp;
         temp = temp->next;
@@ -61,68 +83,68 @@ void BookLink::deleteBook(string isbn) {
     num--;
 }
 
-void BookLink::searchName(BookLink* now) {
+void BookLink::searchName(BookLink*& now) {
     string title;
     printf("输入你要查询的书籍名称：");
     cin >> title;
     BookLink* temp = this;
-    while (temp->detail.getTitle() != title) {
+    while (temp->next->book.getTitle() != title) {
         temp = temp->next;
     }
-    now->insertBook(temp->detail);
+    now->insertBook(temp->book);
 }
 
-void BookLink::searchIsbn(BookLink* now) {
+void BookLink::searchIsbn(BookLink*& now) {
     string isbn;
     printf("输入你要查询的ISBN/ISSN：");
     cin >> isbn;
     BookLink* temp = this;
-    while (temp->detail.getIsbnIssn() != isbn) {
+    while (temp->next->book.getIsbnIssn() != isbn) {
         temp = temp->next;
     }
-    now->insertBook(temp->detail);
+    now->insertBook(temp->book);
 }
 
-void BookLink::searchAuthor(BookLink* now) {
+void BookLink::searchAuthor(BookLink*& now) {
     string author;
     printf("输入你要查询的作者：");
     cin >> author;
     BookLink* temp = this;
     while (temp->next != nullptr) {
-        if (temp->detail.getAuthor() == author) {
-            now->insertBook(temp->detail);
+        if (temp->next->book.getAuthor() == author) {
+            now->insertBook(temp->book);
         }
         temp = temp->next;
     }
 }
 
-void BookLink::searchPublish(BookLink* now) {
+void BookLink::searchPublish(BookLink*& now) {
     string publish;
     printf("输入你要查询的出版社：");
     cin >> publish;
     BookLink* temp = this;
     while (temp->next != nullptr) {
-        if (temp->detail.getPublish() == publish) {
-            now->insertBook(temp->detail);
+        if (temp->next->book.getPublish() == publish) {
+            now->insertBook(temp->book);
         }
         temp = temp->next;
     }
 }
 
-void BookLink::searchPublishTime(BookLink* now) {
+void BookLink::searchPublishTime(BookLink*& now) {
     string publish_time;
     printf("输入你要查询的出版时间：");
     cin >> publish_time;
     BookLink* temp = this;
     while (temp->next != nullptr) {
-        if (temp->detail.getPublishTime() == publish_time) {
-            now->insertBook(temp->detail);
+        if (temp->next->book.getPublishTime() == publish_time) {
+            now->insertBook(temp->book);
         }
         temp = temp->next;
     }
 }
 
-void BookLink::searchPrice(BookLink* now) {
+void BookLink::searchPrice(BookLink*& now) {
     string price_low, price_high;
     printf("输入你要查询的价格范围：\n最低：");
     cin >> price_low;
@@ -130,23 +152,23 @@ void BookLink::searchPrice(BookLink* now) {
     cin >> price_high;
     BookLink* temp = this;
     while (temp->next != nullptr) {
-        if (temp->detail.getPrice() >= price_low && temp->detail.getPrice() <= price_high) {
-            now->insertBook(temp->detail);
+        if (temp->next->book.getPrice() >= price_low && temp->next->book.getPrice() <= price_high) {
+            now->insertBook(temp->book);
         }
         temp = temp->next;
     }
 }
 
-void BookLink::searchTag(BookLink* now) {
+void BookLink::searchTag(BookLink*& now) {
     string tag;
     printf("输入你要查询的标签：");
     cin >> tag;
     BookLink* temp = this;
     while (temp->next != nullptr) {
-        Tag* head = temp->detail.getHead();
+        Tag* head = temp->next->book.getHead();
         while (head->next != nullptr) {
             if (head->name == tag) {
-                now->insertBook(temp->detail);
+                now->insertBook(temp->next->book);
                 break;
             }
             head = head->next;
@@ -155,139 +177,7 @@ void BookLink::searchTag(BookLink* now) {
     }
 }
 
-void BookLink::changeName(BookLink* now) {
-    BookLink* temp = now;
-    BookLink* pre;
-    while (temp->next != nullptr) {
-        temp->print();
-        string name;
-        printf("请输入修改后的名称：");
-        cin >> name;
-        temp->detail.title = name;
-        pre = temp;
-        temp = temp->next;
-        delete pre;
-    }
-}
-
-void BookLink::changeIsbn(BookLink* now) {
-    BookLink* temp = now;
-    BookLink* pre;
-    while (temp->next != nullptr) {
-        temp->print();
-        string isbn;
-        printf("请输入修改后的ISBN/ISSN：");
-        cin >> isbn;
-        temp->detail.isbn_issn = isbn;
-        pre = temp;
-        temp = temp->next;
-        delete pre;
-    }
-}
-
-void BookLink::changeAuthor(BookLink* now) {
-    BookLink* temp = now;
-    BookLink* pre;
-    while (temp->next != nullptr) {
-        temp->print();
-        string author;
-        printf("请输入修改后的作者：");
-        cin >> author;
-        temp->detail.author = author;
-        pre = temp;
-        temp = temp->next;
-        delete pre;
-    }
-}
-
-void BookLink::changePublish(BookLink* now) {
-    BookLink* temp = now;
-    BookLink* pre;
-    while (temp->next != nullptr) {
-        temp->print();
-        string publish;
-        printf("请输入修改后的出版社：");
-        cin >> publish;
-        temp->detail.publish = publish;
-        pre = temp;
-        temp = temp->next;
-        delete pre;
-    }
-}
-
-void BookLink::changePublishTime(BookLink* now) {
-    BookLink* temp = now;
-    BookLink* pre;
-    while (temp->next != nullptr) {
-        temp->print();
-        string publish_time;
-        printf("请输入修改后的出版时间：");
-        cin >> publish_time;
-        temp->detail.publish_time = publish_time;
-        pre = temp;
-        temp = temp->next;
-        delete pre;
-    }
-}
-
-void BookLink::changePrice(BookLink* now) {
-    BookLink* temp = now;
-    BookLink* pre;
-    while (temp->next != nullptr) {
-        temp->print();
-        string price;
-        printf("请输入修改后的价格：");
-        cin >> price;
-        temp->detail.price = price;
-        pre = temp;
-        temp = temp->next;
-        delete pre;
-    }
-}
-
-void BookLink::changeBook() {
-    printf("1.修改名称\n");
-    printf("2.修改ISBN/ISSN\n");
-    printf("3.修改作者\n");
-    printf("4.修改出版社\n");
-    printf("5.修改出版时间\n");
-    printf("6.修改价格\n");
-    printf("请选择你的操作：\n");
-    BookLink *now = new BookLink; //修改书籍头指针
-    int opt;
-    scanf("%d",&opt);
-    switch (opt) {
-        case 1:
-            searchName(now);
-            changeName(now);
-            break;
-        case 2:
-            searchIsbn(now);
-            changeIsbn(now);
-            break;
-        case 3:
-            searchAuthor(now);
-            changeAuthor(now);
-            break;
-        case 4:
-            searchPublish(now);
-            changePublish(now);
-            break;
-        case 5:
-            searchPublishTime(now);
-            changePublishTime(now);
-            break;
-        case 6:
-            searchPrice(now);
-            changePrice(now);
-            break;
-        default:
-            printf("请重新选择\n");
-            changeBook();
-    }
-}
-
-void BookLink::searchBook() {
+void BookLink::searchBook(BookLink*& headReturn) {
     printf("1.名称\n");
     printf("2.ISBN/ISSN\n");
     printf("3.作者\n");
@@ -295,7 +185,7 @@ void BookLink::searchBook() {
     printf("5.出版时间\n");
     printf("6.价格区间\n");
     printf("请选择你的操作：\n");
-    BookLink *now = new BookLink; //修改书籍头指针
+    BookLink* now = new BookLink; //书籍头指针
     int opt;
     scanf("%d",&opt);
     switch (opt) {
@@ -319,17 +209,55 @@ void BookLink::searchBook() {
             break;
         default:
             printf("请重新选择\n");
-            searchBook();
+            searchBook(headReturn);
     }
+    headReturn = now;
+}
 
-    BookLink *temp = now;
-    BookLink *pre;
-    while (temp->next != nullptr) {
-        temp->print();
-        pre = temp;
-        temp = temp->next;
-        delete pre;
-    }
+void BookLink::changeTitle() {
+    string title;
+    printf("请输入修改后的名称：");
+    cin >> title;
+    this->book.title = title;
+}
+
+void BookLink::changeIsbn() {
+    string isbn;
+    printf("请输入修改后的ISBN/ISSN：");
+    cin >> isbn;
+    this->book.isbn_issn = isbn;
+}
+
+void BookLink::changeAuthor() {
+    string author;
+    printf("请输入修改后的作者：");
+    cin >> author;
+    this->book.author = author;
+}
+
+void BookLink::changePublish() {
+    string publish;
+    printf("请输入修改后的出版社：");
+    cin >> publish;
+    this->book.publish = publish;
+}
+
+void BookLink::changePublishTime() {
+    string publishTime;
+    printf("请输入修改后的出版时间：");
+    cin >> publishTime;
+    this->book.publishTime = publishTime;
+}
+
+void BookLink::changePrice() {
+    string price;
+    printf("请输入修改后的价格：");
+    cin >> price;
+    this->book.price = price;
+}
+
+void BookLink::changeFlagBorrow(bool f) {
+    this->book.flagBorrow = f;
 }
 
 void BookLink::sortTime() {
@@ -343,12 +271,12 @@ void BookLink::sortTime() {
             BookLink* sortTemp = sortHead;
             bool flag = false;
             while (sortTemp->next != nullptr) {
-                if (sortTemp->next->detail.time < temp->next->detail.time) {
-                    maxTime = max(maxTime, temp->next->detail.time);
-                    minTime = min(minTime, temp->next->detail.time);
+                if (sortTemp->next->book.time < temp->next->book.time) {
+                    maxTime = max(maxTime, temp->next->book.time);
+                    minTime = min(minTime, temp->next->book.time);
 
                     BookLink* sortNew = new BookLink;
-                    sortNew->detail = temp->next->detail;  //todo:是否是next ？ 下面那个函数也一样
+                    sortNew->book = temp->next->book;  //todo:是否是next ？ 下面那个函数也一样
 
                     sortNew->next = sortTemp->next;
                     sortTemp->next->pre = sortNew;
@@ -360,22 +288,22 @@ void BookLink::sortTime() {
                 sortTemp = sortTemp->next;
             }
             if (!flag) {
-                maxTime = max(maxTime, temp->next->detail.time);
-                minTime = min(minTime, temp->next->detail.time);
+                maxTime = max(maxTime, temp->next->book.time);
+                minTime = min(minTime, temp->next->book.time);
                 BookLink* sortNew = new BookLink;
-                sortNew->detail = temp->next->detail;
+                sortNew->book = temp->next->book;
                 sortTemp->next = sortNew;
             }
             cnt++;
         } else {
-            if (temp->next->detail.time <= minTime) continue;
+            if (temp->next->book.time <= minTime) continue;
             BookLink* sortTemp = sortHead;
-            while (sortTemp->next->detail.time >= temp->next->detail.time) {
+            while (sortTemp->next->book.time >= temp->next->book.time) {
                 sortTemp = sortTemp->next;
             }
             BookLink* pre = nullptr;
             BookLink* sortNew = new BookLink;
-            sortNew->detail = temp->next->detail;
+            sortNew->book = temp->next->book;
 
             sortNew->next = sortTemp->next;
             sortTemp->next->pre = sortNew;
@@ -386,7 +314,7 @@ void BookLink::sortTime() {
                 sortTemp = sortTemp->next;
             }
             delete sortTemp;
-            minTime = pre->detail.time;
+            minTime = pre->book.time;
         }
         temp = temp->next;
     }
@@ -413,16 +341,16 @@ void BookLink::sortPublishTime() {
             BookLink* sortTemp = sortHead;
             bool flag = false;
             while (sortTemp->next != nullptr) {
-                if (cmpPublishTime(sortTemp->next->detail.publish_time, temp->next->detail.publish_time)) {
-                    if (cmpPublishTime(maxTime, temp->next->detail.publish_time)) {
-                        maxTime = temp->next->detail.publish_time;
+                if (cmpPublishTime(sortTemp->next->book.publishTime, temp->next->book.publishTime)) {
+                    if (cmpPublishTime(maxTime, temp->next->book.publishTime)) {
+                        maxTime = temp->next->book.publishTime;
                     }
-                    if (cmpPublishTime(temp->next->detail.publish_time, minTime)) {
-                        minTime = temp->next->detail.publish_time;
+                    if (cmpPublishTime(temp->next->book.publishTime, minTime)) {
+                        minTime = temp->next->book.publishTime;
                     }
 
                     BookLink* sortNew = new BookLink;
-                    sortNew->detail = temp->next->detail; //todo：next？
+                    sortNew->book = temp->next->book; //todo：next？
 
                     sortNew->next = sortTemp->next;
                     sortTemp->next->pre = sortNew;
@@ -434,27 +362,27 @@ void BookLink::sortPublishTime() {
                 sortTemp = sortTemp->next;
             }
             if (!flag) {
-                if (cmpPublishTime(temp->next->detail.publish_time, minTime)) {
-                    minTime = temp->next->detail.publish_time;
+                if (cmpPublishTime(temp->next->book.publishTime, minTime)) {
+                    minTime = temp->next->book.publishTime;
                 }
-                if (cmpPublishTime(maxTime, temp->next->detail.publish_time)) {
-                    maxTime = temp->next->detail.publish_time;
+                if (cmpPublishTime(maxTime, temp->next->book.publishTime)) {
+                    maxTime = temp->next->book.publishTime;
                 }
 
                 BookLink* sortNew = new BookLink;
-                sortNew->detail = temp->next->detail;
+                sortNew->book = temp->next->book;
                 sortTemp->next = sortNew;
             }
             cnt++;
         } else {
-            if (!cmpPublishTime(minTime, temp->next->detail.publish_time)) continue;
+            if (!cmpPublishTime(minTime, temp->next->book.publishTime)) continue;
             BookLink* sortTemp = sortHead;
-            while (!cmpPublishTime(sortTemp->next->detail.publish_time, temp->next->detail.publish_time)) {
+            while (!cmpPublishTime(sortTemp->next->book.publishTime, temp->next->book.publishTime)) {
                 sortTemp = sortTemp->next;
             }
             BookLink* pre = nullptr;
             BookLink* sortNew = new BookLink;
-            sortNew->detail = temp->next->detail;
+            sortNew->book = temp->next->book;
 
             sortNew->next = sortTemp->next;
             sortTemp->next->pre = sortNew;
@@ -465,7 +393,7 @@ void BookLink::sortPublishTime() {
                 sortTemp = sortTemp->next;
             }
             delete sortTemp;
-            minTime = pre->detail.publish_time;
+            minTime = pre->book.publishTime;
         }
 
         temp = temp->next;
@@ -475,7 +403,7 @@ void BookLink::sortPublishTime() {
 void BookLink::merge(BookLink*& head1, BookLink*& head2) {
     BookLink* tail = new BookLink;
     while (head1 != nullptr && head2 != nullptr) {
-        if (head1->detail.title < head2->detail.title) {
+        if (head1->book.title < head2->book.title) {
             tail->next = head1;
             head1 = head1->next;
         } else {
@@ -609,27 +537,3 @@ void BookLink::sortTag() {
         temp = temp->next;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

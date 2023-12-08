@@ -1,29 +1,45 @@
 #pragma once
 
 #include "Person.h"
-#include <iostream>
-using namespace std;
 
 class User : public Person {
 private:
-    History* head;
+    History* headHistory;
+    BookLink* borrowed;
+
+    User* pre;
+    User* next;
 
 public:
-    User(string username, string password, ull id) : Person(username, password) {
-        head = nullptr;
-        this->id = id;
-    }
+    User(string username, string password, ull id);
 
-    void borrowBook(string bookTitle);
-    void returnBook(string bookTitle);
-    void searchBook(string bookTitle);
-    void searchHistory(string bookTitle);
+    User* getPre();
+    User* getNext();
+    void insertPre(User* user);
+    void insertNext(User* user);
+
+    void print();
+    void borrowBook(BookLink* headMain);
+    void returnBook();
+    void searchBook(BookLink* headMain);
 };
 
 class Admin : public Person {
 public:
     Admin(string username, string password) : Person(username, password) {}
 
-    void changeBook(string bookTitle);
-    void changeUser(User& user);
+    void changeBook(BookLink* headMain);
+
+    // User
+    void insertUser(User* userHead);
+    void deleteUser(User* userHead,ull id);
+    void resetUser(User* userHead,ull id);
+    void searchUser(User* userHead,ull id);
+
+    friend class User;
+};
+
+class Visitor : public Person {
+public:
+    void searchBook(BookLink* headMain);
 };

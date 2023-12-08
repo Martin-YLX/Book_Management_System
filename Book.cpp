@@ -2,6 +2,7 @@
 
 Book::Book() {
     head = new Tag;
+    flagBorrow = false;
 }
 
 Book::Book(string tit, string isbn, string auth, string pub, string pub_time, string pri, ull tim) {
@@ -9,10 +10,11 @@ Book::Book(string tit, string isbn, string auth, string pub, string pub_time, st
     isbn_issn = isbn;
     author = auth;
     publish = pub;
-    publish_time = pub_time;
+    publishTime = pub_time;
     price = pri;
     time = tim;
     head = new Tag;
+    flagBorrow = false;
 }
 
 void Book::insertTag(string s) {
@@ -66,7 +68,7 @@ string Book::getPublish() const {
 }
 
 string Book::getPublishTime() const {
-    return publish_time;
+    return publishTime;
 }
 
 string Book::getPrice() const {
@@ -75,6 +77,10 @@ string Book::getPrice() const {
 
 ull Book::getTime() const {
     return time;
+}
+
+bool Book::getFlagBorrow() const {
+    return flagBorrow;
 }
 
 Tag* Book::getHead() const {

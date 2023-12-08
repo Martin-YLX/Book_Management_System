@@ -1,12 +1,13 @@
 #pragma once
 
+#include "BookLink.h"
 #include <iostream>
 using namespace std;
 
 #define ull unsigned long long
 
 struct History {
-    string title; // ISBN号 ISSN号
+    Book book;
     ull time;      // 借阅次数
     History* next;
 };
@@ -18,17 +19,13 @@ protected:
     string password;
 
 public:
-    Person(string username, string password) {
-        this->username = username;
-        this->password = password;
-    }
+    Person(string username, string password);
 
-    void changePassword(string password) {
-        this->password = password;
-    }
+    ull getID() const;
+    string getUsername() const;
+    void changePassword(string password);
+    void searchBook(BookLink* headMain);
 
-    string getUsername() const {
-        return username;
-    }
+    friend class BookLink;
 };
 
