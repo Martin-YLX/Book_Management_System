@@ -6,39 +6,58 @@ BookLink::BookLink() {
     pre = nullptr;
 }
 
+bool Book::operator < (const Book& other) const {
+    return this->title < other.title;
+}
+
 void BookLink::insert(Book in) {
+    book.id = in.id;
     book.title = in.getTitle();
     book.isbn_issn = in.getIsbnIssn();
     book.author = in.getAuthor();
     book.publish = in.getPublish();
     book.publishTime = in.getPublishTime();
     book.price = in.getPrice();
+    book.pages = in.pages;
+    book.description = in.description;
     book.time = in.time;
     book.flagBorrow = false;
 }
 
+void BookLink::insertPre(BookLink* newBook) {
+    this->pre = newBook;
+}
+void BookLink::insertNext(BookLink* newBook) {
+    this->next = newBook;
+}
+
 void BookLink::print() {
     printf("书籍信息：\n");
-    printf("名称：\n");
-    cout << book.title << endl;
-    printf("ISBN/ISSN：\n");
-    cout << book.isbn_issn << endl;
-    printf("作者：\n");
-    cout << book.author << endl;
-    printf("出版社：\n");
-    cout << book.publish << endl;
-    printf("出版时间：\n");
-    cout << book.publishTime << endl;
-    printf("价格：\n");
-    cout << book.price << endl;
+    printf("ID：%llu\n",book.getID());
+    printf("名称：");
+    cout << book.getTitle() << endl;
+    printf("ISBN/ISSN：");
+    cout << book.getIsbnIssn() << endl;
+    printf("作者：");
+    cout << book.getAuthor() << endl;
+    printf("出版社：");
+    cout << book.getPublish() << endl;
+    printf("出版时间：");
+    cout << book.getPublishTime() << endl;
+    printf("页数：%llu\n",book.pages);
+    printf("价格：");
+    cout << book.getPrice() << endl;
     printf("借阅次数：%llu\n", book.getTime());
+    printf("简介：\n");
+    cout << book.description << endl;
 }
 
 void BookLink::allPrint() {
     BookLink* temp = this;
-    while (this->next != nullptr) {
-        this->next->print();
+    while (temp->next != nullptr) {
+        temp->next->print();
         putchar('\n');
+        temp = temp->next;
     }
 }
 
@@ -64,10 +83,10 @@ void BookLink::insertBook(Book in) {
         temp = temp->next;
     }
     BookLink* next = new BookLink;
-    next->insert(in);
     next->next = nullptr;
-    temp->next = next;
     next->pre = temp;
+    temp->next = next;
+    next->insert(in);  // 将插入操作移到链接节点之后
     num++;
 }
 
@@ -91,7 +110,7 @@ void BookLink::searchName(BookLink*& now) {
     while (temp->next->book.getTitle() != title) {
         temp = temp->next;
     }
-    now->insertBook(temp->book);
+    now->insertBook(temp->next->book);
 }
 
 void BookLink::searchIsbn(BookLink*& now) {
@@ -102,7 +121,7 @@ void BookLink::searchIsbn(BookLink*& now) {
     while (temp->next->book.getIsbnIssn() != isbn) {
         temp = temp->next;
     }
-    now->insertBook(temp->book);
+    now->insertBook(temp->next->book);
 }
 
 void BookLink::searchAuthor(BookLink*& now) {
@@ -112,7 +131,7 @@ void BookLink::searchAuthor(BookLink*& now) {
     BookLink* temp = this;
     while (temp->next != nullptr) {
         if (temp->next->book.getAuthor() == author) {
-            now->insertBook(temp->book);
+            now->insertBook(temp->next->book);
         }
         temp = temp->next;
     }
@@ -125,7 +144,7 @@ void BookLink::searchPublish(BookLink*& now) {
     BookLink* temp = this;
     while (temp->next != nullptr) {
         if (temp->next->book.getPublish() == publish) {
-            now->insertBook(temp->book);
+            now->insertBook(temp->next->book);
         }
         temp = temp->next;
     }
@@ -138,7 +157,7 @@ void BookLink::searchPublishTime(BookLink*& now) {
     BookLink* temp = this;
     while (temp->next != nullptr) {
         if (temp->next->book.getPublishTime() == publish_time) {
-            now->insertBook(temp->book);
+            now->insertBook(temp->next->book);
         }
         temp = temp->next;
     }
@@ -153,7 +172,7 @@ void BookLink::searchPrice(BookLink*& now) {
     BookLink* temp = this;
     while (temp->next != nullptr) {
         if (temp->next->book.getPrice() >= price_low && temp->next->book.getPrice() <= price_high) {
-            now->insertBook(temp->book);
+            now->insertBook(temp->next->book);
         }
         temp = temp->next;
     }
@@ -402,8 +421,9 @@ void BookLink::sortPublishTime() {
 
 void BookLink::merge(BookLink*& head1, BookLink*& head2) {
     BookLink* tail = new BookLink;
+    BookLink* mergedHead = tail;  // 保留合并后链表的头部
     while (head1 != nullptr && head2 != nullptr) {
-        if (head1->book.title < head2->book.title) {
+        if (head1->book < head2->book) {
             tail->next = head1;
             head1 = head1->next;
         } else {
@@ -417,24 +437,31 @@ void BookLink::merge(BookLink*& head1, BookLink*& head2) {
     } else {
         tail->next = head2;
     }
-    head1 = tail->next;
+    head1 = mergedHead->next;  // 更新 head1 为合并后链表的头部
+    delete mergedHead;  // 释放临时头节点的内存
 }
 
 void BookLink::sortLexico() {
     if (this == nullptr || this->next == nullptr) return;
+
     BookLink* slow = this;
     BookLink* fast = this->next;
+
     while (fast != nullptr && fast->next != nullptr) {
         slow = slow->next;
         fast = fast->next->next;
-    } //快慢指针找中点
+    } // 快慢指针找中点
+
     BookLink* head1 = this;
     BookLink* head2 = slow->next;
     slow->next = nullptr;
+
     head1->sortLexico();
     head2->sortLexico();
+
     merge(head1, head2);
 }
+
 
 Tag* BookLink::getAllTagHead() const {
     return allTag;
@@ -536,4 +563,5 @@ void BookLink::sortTag() {
         }
         temp = temp->next;
     }
+    //todo:加一个user里的函数
 }

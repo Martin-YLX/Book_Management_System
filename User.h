@@ -29,6 +29,7 @@ public:
     Admin(string username, string password) : Person(username, password) {}
 
     void changeBook(BookLink* headMain);
+    void deleteBook(BookLink* headMain);
 
     // User
     void insertUser(User* userHead);

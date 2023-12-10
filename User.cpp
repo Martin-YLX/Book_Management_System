@@ -30,10 +30,10 @@ void User::print() {
     cout << username << endl;
 }
 
-void User::borrowBook(BookLink* headMain) {
-    BookLink* ans = borrowed; // getNext()?
-    headMain->searchBook(ans);
-    BookLink* temp = ans;
+void User::borrowBook(BookLink* headBorrow) {
+    //BookLink* ans = borrowed; // getNext()?
+    //headMain->searchBook(ans);
+    BookLink* temp = headBorrow;
     while (temp->getNext() != nullptr) {
         temp->getNext()->print();
         printf("是否要借这本书:");
@@ -116,6 +116,25 @@ void Admin::changeBook(BookLink* headMain) {
                 continue;
         }
         temp = temp->getNext();
+    }
+}
+
+void Admin::deleteBook(BookLink* headMain) {
+    printf("请先查询书籍：\n");
+    BookLink* temp;
+    headMain->searchBook(temp);
+    while (temp->getNext() != nullptr) {
+        temp->getNext()->print();
+        printf("是否删除：");
+        int opt;
+        scanf("%d",&opt);
+        if (opt) {
+            temp->getPre()->insertNext(temp->getNext());
+            temp->getNext()->insertPre(temp->getPre());
+            BookLink* pre = temp;
+            temp = temp->getNext();
+            delete pre;
+        } else temp = temp->getNext();
     }
 }
 

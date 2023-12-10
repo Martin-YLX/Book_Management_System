@@ -2,6 +2,6 @@
 #include "BookLink.h"
 #include "User.h"
 int main() {
-    std::cout << "Hello, World!" << std::endl;
+    BookLink* headMain = new BookLink;
     return 0;
 }

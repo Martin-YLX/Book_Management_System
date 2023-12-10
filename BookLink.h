@@ -1,6 +1,9 @@
 #pragma once
 
 #include <iostream>
+#include <fstream>
+#include <sstream>
+#include <vector>
 using namespace std;
 
 class BookLink;
@@ -16,30 +19,41 @@ struct Tag {
 
 class Book {
 private:
+    ull id;
     string title;
     string isbn_issn;
     string author;
     string publish;
     string publishTime;
     string price;
+    ull pages;
+    string description;
     ull time;
     bool flagBorrow;
+
+    static Book createBookFromString(const string& line);
+
     Tag* head;
 
 public:
     Book(); // 初始化
-    Book(string tit, string isbn, string auth, string pub, string pub_time, string pri, ull tim); // 插入内容
+    Book(ull id,string tit, string isbn, string auth, string pub, string pub_time, ull pages, string pri, string des, ull tim); // 插入内容
     void insertTag(string s); // 增加 tag
     void deleteTag(string s); // 删除 tag
     void addTime(int x); // 修改借阅次数
 
+    bool operator < (const Book& other) const;
+
+    ull getID() const;
     string getTitle() const;
     string getIsbnIssn() const;
     string getAuthor() const;
     string getPublish() const;
     string getPublishTime() const;
     string getPrice() const;
+    ull getPages() const;
     ull getTime() const;
+    string getDes() const;
     bool getFlagBorrow() const;
 
     Tag* getHead() const;
@@ -56,10 +70,15 @@ private:
     Tag* allTag;
 
 public:
+    //void readXlsFile(const string fileName);
+    //void readCsvFile(const string fileName);
+
     BookLink(); // 初始化
     void print(); // 输出全部信息
     void allPrint();
     void insert(Book in); // 插入 Detail
+    void insertPre(BookLink* newBook);
+    void insertNext(BookLink* newBook);
     bool check(string isbn); // 验证 isbn issn
     // 构建
     BookLink* getPre();
