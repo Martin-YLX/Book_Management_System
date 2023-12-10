@@ -7,6 +7,7 @@
 using namespace std;
 
 class BookLink;
+class SortLink;
 
 struct Tag {
     int cnt;
@@ -115,3 +116,59 @@ public:
     void deleteAllTag(string s); //该tag书籍减一
     void sortTag(); //最受欢迎的前三个tag
 };
+
+class SortLink {
+private:
+    BookLink* object;
+    SortLink* pre;
+    SortLink* next;
+public:
+
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

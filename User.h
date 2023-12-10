@@ -11,6 +11,7 @@ private:
     User* next;
 
 public:
+    User();
     User(string username, string password, ull id);
 
     User* getPre();
@@ -44,3 +45,5 @@ class Visitor : public Person {
 public:
     void searchBook(BookLink* headMain);
 };
+
+//todo:最后优化：析构函数释放内存 history添加变量追踪最后一个元素，提高效率

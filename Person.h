@@ -21,6 +21,8 @@ protected:
 public:
     Person(string username, string password);
 
+    Person();
+
     ull getID() const;
     string getUsername() const;
     void changePassword(string password);

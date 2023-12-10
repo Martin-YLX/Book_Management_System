@@ -16,6 +16,13 @@ void User::insertNext(User *user) {
     this->next = user;
 }
 
+User::User() {
+    headHistory = new History;
+    borrowed = new BookLink;
+
+    pre = nullptr;
+    next = nullptr;
+}
 
 User::User(string username, string password, ull id) : Person(username, password) {
     headHistory = nullptr;
@@ -41,6 +48,14 @@ void User::borrowBook(BookLink* headBorrow) {
         scanf("%d",&opt);
         if (opt) {
             temp->getNext()->changeFlagBorrow(true);
+            BookLink* tempBor = borrowed;
+            while (tempBor->getNext() != nullptr) {
+                tempBor = tempBor->getNext();
+            }
+            BookLink* newBorrowed = new BookLink;
+            newBorrowed->insertBook(temp->getBook());
+            tempBor->insertNext(newBorrowed);
+            newBorrowed->insertPre(tempBor);
             // history
             History *tempHis = headHistory;
             while (tempHis->next != nullptr) {
@@ -156,9 +171,9 @@ void Admin::deleteUser(User* userHead,ull id) {
     User* temp = userHead;
     while (temp->getNext() != nullptr) {
         if (temp->getNext()->getID() == id) {
-            temp->getPre()->insertNext(temp->getNext());
-            temp->getNext()->insertPre(temp->getPre());
-            delete temp;
+            temp->insertNext(temp->getNext()->getNext());
+            temp->getNext()->getNext()->insertPre(temp);
+            delete temp->getNext();
             break;
         }
         temp = temp->getNext();
@@ -180,7 +195,7 @@ void Admin::searchUser(User* userHead,ull id) {
     User* temp = userHead;
     while (temp->getNext() != nullptr) {
         if (temp->getNext()->getID() == id) {
-            temp->print();
+            temp->getNext()->print();
             putchar('\n');
             break;
         }

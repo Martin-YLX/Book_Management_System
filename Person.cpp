@@ -26,4 +26,6 @@ void Person::searchBook(BookLink* headMain) {
     }
 }
 
+Person::Person() {}
+
 

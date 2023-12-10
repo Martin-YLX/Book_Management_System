@@ -70,7 +70,7 @@ BookLink* BookLink::getPre() {
 }
 
 BookLink* BookLink::getNext() {
-    return next;
+    return this->next;
 }
 
 Book BookLink::getBook() {
