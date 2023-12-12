@@ -82,20 +82,20 @@ public:
     void insertNext(BookLink* newBook);
     bool check(string isbn); // 验证 isbn issn
     // 构建
-    BookLink* getPre();
-    BookLink* getNext();
-    Book getBook();
+    BookLink* getPre() const;
+    BookLink* getNext() const;
+    Book getBook() const;
     void insertBook(Book in); // 增加 Book
     void deleteBook(string isbn); // 减少 Book
     // 查询
-    void searchBook(BookLink*& headReturn); // 寻找 Book
-    void searchName(BookLink*& now); // 按名称查询
-    void searchIsbn(BookLink*& now); // 按 ISBN 查询
-    void searchAuthor(BookLink*& now); // 按作者查询
-    void searchPublish(BookLink*& now); // 按出版社查询
-    void searchPublishTime(BookLink*& now); // 按出版时间查询
-    void searchPrice(BookLink*& now); // 按价格查询
-    void searchTag(BookLink*& now); // 按标签查询
+    void searchBook(SortLink*& headReturn); // 寻找 Book
+    void searchName(SortLink*& now); // 按名称查询
+    void searchIsbn(SortLink*& now); // 按 ISBN 查询
+    void searchAuthor(SortLink*& now); // 按作者查询
+    void searchPublish(SortLink*& now); // 按出版社查询
+    void searchPublishTime(SortLink*& now); // 按出版时间查询
+    void searchPrice(SortLink*& now); // 按价格查询
+    void searchTag(SortLink*& now); // 按标签查询
     // 修改
     void changeTitle(); // 修改名称
     void changeIsbn(); // 修改 ISBN
@@ -115,60 +115,23 @@ public:
     void insertAllTag(string s); //该tag书籍加一
     void deleteAllTag(string s); //该tag书籍减一
     void sortTag(); //最受欢迎的前三个tag
+
+    ~BookLink();
 };
 
+//修改
 class SortLink {
 private:
     BookLink* object;
     SortLink* pre;
     SortLink* next;
 public:
+    SortLink();
 
+    SortLink* getNext() const;
+    BookLink* getBookLink() const;
+    void allPrint();
+    void insertBook(BookLink* toInsert);
+
+    ~SortLink();
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,10 +1,10 @@
 #include "Person.h"
 #include "User.h"
 
-User* User::getPre() {
+User* User::getPre() const {
     return pre;
 }
-User* User::getNext() {
+User* User::getNext() const {
     return next;
 }
 
@@ -16,19 +16,37 @@ void User::insertNext(User *user) {
     this->next = user;
 }
 
-User::User() {
+User::User() : Person() {
     headHistory = new History;
     borrowed = new BookLink;
-
+    headHistory->next= nullptr;
     pre = nullptr;
     next = nullptr;
+    this->id = 0;
 }
 
-User::User(string username, string password, ull id) : Person(username, password) {
-    headHistory = nullptr;
+User::User(string newUsername, string newPassword, ull id) : Person(newUsername, newPassword) {
+    borrowed = new BookLink;
+    headHistory = new History;
+    headHistory->next= nullptr;
     pre = nullptr;
     next = nullptr;
     this->id = id;
+}
+
+User::~User() {
+    History* tempHis = headHistory;
+    while (tempHis) {
+        History* preHis = tempHis;
+        tempHis = tempHis->next;
+        delete preHis;
+    }
+    BookLink* tempBook = borrowed;
+    while (tempBook) {
+        BookLink* preHis = tempBook;
+        tempBook = tempBook->getNext();
+        delete preHis;
+    }
 }
 
 void User::print() {
@@ -38,8 +56,6 @@ void User::print() {
 }
 
 void User::borrowBook(BookLink* headBorrow) {
-    //BookLink* ans = borrowed; // getNext()?
-    //headMain->searchBook(ans);
     BookLink* temp = headBorrow;
     while (temp->getNext() != nullptr) {
         temp->getNext()->print();
@@ -53,7 +69,7 @@ void User::borrowBook(BookLink* headBorrow) {
                 tempBor = tempBor->getNext();
             }
             BookLink* newBorrowed = new BookLink;
-            newBorrowed->insertBook(temp->getBook());
+            newBorrowed->insert(temp->getNext()->getBook());
             tempBor->insertNext(newBorrowed);
             newBorrowed->insertPre(tempBor);
             // history
@@ -85,17 +101,11 @@ void User::returnBook() {
     }
 }
 
-void User::searchBook(BookLink* headMain) {
-    Person::searchBook(headMain);
-}
-
-void Visitor::searchBook(BookLink* headMain) {
-    Person::searchBook(headMain);
-}
+Admin::Admin(string newUsername, string newPassword) : Person(newUsername, newPassword) {}
 
 void Admin::changeBook(BookLink* headMain) {
     printf("请先查询书籍：\n");
-    BookLink* temp;
+    SortLink* temp;
     headMain->searchBook(temp);
     while (temp->getNext() != nullptr) {
         printf("请选择修改的元素：\n");
@@ -110,22 +120,22 @@ void Admin::changeBook(BookLink* headMain) {
         scanf("%d",&opt);
         switch (opt) {
             case 1:
-                temp->getNext()->changeTitle();
+                temp->getNext()->getBookLink()->changeTitle();
                 break;
             case 2:
-                temp->getNext()->changeIsbn();
+                temp->getNext()->getBookLink()->changeIsbn();
                 break;
             case 3:
-                temp->getNext()->changeAuthor();
+                temp->getNext()->getBookLink()->changeAuthor();
                 break;
             case 4:
-                temp->getNext()->changePublish();
+                temp->getNext()->getBookLink()->changePublish();
                 break;
             case 5:
-                temp->getNext()->changePublishTime();
+                temp->getNext()->getBookLink()->changePublishTime();
                 break;
             case 6:
-                temp->getNext()->changePrice();
+                temp->getNext()->getBookLink()->changePrice();
                 break;
             default:
                 continue;
@@ -136,17 +146,17 @@ void Admin::changeBook(BookLink* headMain) {
 
 void Admin::deleteBook(BookLink* headMain) {
     printf("请先查询书籍：\n");
-    BookLink* temp;
+    SortLink* temp;
     headMain->searchBook(temp);
     while (temp->getNext() != nullptr) {
-        temp->getNext()->print();
+        temp->getNext()->getBookLink()->print();
         printf("是否删除：");
         int opt;
         scanf("%d",&opt);
         if (opt) {
-            temp->getPre()->insertNext(temp->getNext());
-            temp->getNext()->insertPre(temp->getPre());
-            BookLink* pre = temp;
+            temp->getBookLink()->getPre()->insertNext(temp->getBookLink()->getNext());
+            temp->getBookLink()->getNext()->insertPre(temp->getBookLink()->getPre());
+            BookLink* pre = temp->getBookLink();
             temp = temp->getNext();
             delete pre;
         } else temp = temp->getNext();
@@ -161,8 +171,21 @@ void Admin::insertUser(User* userHead) {
     while (temp->getNext() != nullptr) {
         temp = temp->getNext();
     }
-    cin >> username >> password;
-    User* newUser = new User(username,password,++cnt);
+    string newUsername, newPassword, againPassword;
+    printf("注册账号：\n");
+    printf("请输入用户名：");
+    cin >> newUsername;
+    printf("请输入密码：");
+    cin >> newPassword;
+    printf("请再次输入密码：");
+    cin >> againPassword;
+    while (newPassword != againPassword) {
+        printf("请重新输入密码：");
+        cin >> newPassword;
+        printf("请再次输入密码：");
+        cin >> againPassword;
+    }
+    User* newUser = new User(newUsername,newPassword,++cnt);
     temp->insertNext(newUser);
     newUser->insertPre(temp);
 }
@@ -171,9 +194,10 @@ void Admin::deleteUser(User* userHead,ull id) {
     User* temp = userHead;
     while (temp->getNext() != nullptr) {
         if (temp->getNext()->getID() == id) {
-            temp->insertNext(temp->getNext()->getNext());
             temp->getNext()->getNext()->insertPre(temp);
+            User* tempUser = temp->getNext()->getNext();
             delete temp->getNext();
+            temp->insertNext(tempUser);
             break;
         }
         temp = temp->getNext();

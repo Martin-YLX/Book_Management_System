@@ -1,8 +1,8 @@
 #include "Person.h"
 
-Person::Person(string username, string password) {
-    this->username = username;
-    this->password = password;
+Person::Person(string newUsername, string newPassword) {
+    this->username = newUsername;
+    this->password = newPassword;
 }
 
 ull Person::getID() const {
@@ -13,19 +13,20 @@ string Person::getUsername() const {
     return username;
 }
 
-void Person::changePassword(string password) {
-    this->password = password;
+void Person::changePassword(string newPassword) {
+    this->password = newPassword;
 }
 
+//修改
 void Person::searchBook(BookLink* headMain) {
-    BookLink* ans;
-    headMain->searchBook(ans);
-    while (ans->getNext() != nullptr) {
-        ans->getNext()->print();
-        ans = ans->getNext();
-    }
+    SortLink* temp;
+    headMain->searchBook(temp);
+    temp->allPrint();
 }
 
-Person::Person() {}
+Person::Person() {
+    this->username = "";
+    this->password = "";
+}
 
 

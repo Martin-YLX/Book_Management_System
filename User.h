@@ -14,20 +14,21 @@ public:
     User();
     User(string username, string password, ull id);
 
-    User* getPre();
-    User* getNext();
+    User* getPre() const;
+    User* getNext() const;
     void insertPre(User* user);
     void insertNext(User* user);
 
     void print();
     void borrowBook(BookLink* headMain);
     void returnBook();
-    void searchBook(BookLink* headMain);
+
+    ~User();
 };
 
 class Admin : public Person {
 public:
-    Admin(string username, string password) : Person(username, password) {}
+    Admin(string username, string password);
 
     void changeBook(BookLink* headMain);
     void deleteBook(BookLink* headMain);
@@ -43,7 +44,6 @@ public:
 
 class Visitor : public Person {
 public:
-    void searchBook(BookLink* headMain);
 };
 
-//todo:最后优化：析构函数释放内存 history添加变量追踪最后一个元素，提高效率
+//todo:最后优化：history添加变量追踪最后一个元素，提高效率

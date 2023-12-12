@@ -19,15 +19,15 @@ protected:
     string password;
 
 public:
-    Person(string username, string password);
-
     Person();
+    Person(string newUsername, string newPassword);
 
     ull getID() const;
     string getUsername() const;
-    void changePassword(string password);
+    void changePassword(string newPassword);
     void searchBook(BookLink* headMain);
 
     friend class BookLink;
 };
 
+//todo:虚函数
