@@ -1,0 +1,4 @@
+- **Project Name**: Library Management System  
+- **Completion Time**: 2023  
+- **Course**: Programming Design  
+- **Software Used**: CLion 
